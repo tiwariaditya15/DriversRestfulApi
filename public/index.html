@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Cab Dhundho</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+    <body>
+        
+        <div id="root">
+        </div>
+           
+        <!--For babel and react-->
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <!--For Bootstrap-->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        
+        <script type = "text/jsx">
+    
+        
+            class App extends React.Component{
+                state = {
+                    drivers: []
+                }
+
+                handleSubmit = (e) => {
+                    e.preventDefault();
+                    const lat = this.refs.lat.value;
+                    const lng = this.refs.lng.value;
+                    
+                    fetch('/api/drivers?lng=' + lng + '&lat=' + lat).then(function(drivers){
+                        return drivers.json();
+                    }).then( drivers => {
+                        this.setState({
+                            drivers: drivers
+                        });
+                    });
+                };
+
+                render(){
+                    const drivers = this.state.drivers;
+                    const driversList = drivers.map( driver => {
+                        return(
+                            <div className="card bg-light mx-3 my-3 p-3" key={driver._id}>
+                                <div className="card-header">{driver.name}-{driver.age}</div>
+                                <div className="card-body">
+                                    <p>{driver.carType}-{driver.carName}</p>
+                                    <p>Service By-{driver.firm}</p>
+                                    <p>{Math.floor(driver.dist / 1000)} km away</p>
+                                </div>
+                            </div>
+                        )
+                    });
+                    return(
+
+                            <div className="root-div">
+
+                                <div className="jumbotron-fluid bg-info text-center">
+                                    <p className="display-1 text-white"> Car Dhundho </p>
+                                    <p className="lead text-white">Your goto place for hiring cars</p>
+                                </div>
+
+                                <div className="container">
+                                    <form onSubmit={this.handleSubmit} >
+                                        <div className="row">
+                                            <div className="col-md-6">
+                                                <input type="text" ref="lat" className="form-control" placeholder="Enter Latitude"/>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <input type="text" ref="lng" className="form-control" placeholder="Enter Longitude"/>
+                                            </div>
+                                        </div>
+                                        <div className="row my-3">
+                                                <div className="col-md-6">
+                                                    <input type="submit" value="Find Cabs" className="btn btn-primary" />
+                                                </div>
+                                        </div>
+                                    </form>
+                                
+                                    <div className="row">
+                                        {driversList}
+                                    </div>
+                                
+                                </div>
+                            
+                            </div>
+                    );
+                }
+            }
+            
+            ReactDOM.render(<App />, document.getElementById('root'));
+
+        </script>
+    
+    </body>
+</html>
